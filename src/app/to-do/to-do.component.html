@@ -1,0 +1,63 @@
+<!-- Modal de edición -->
+<div *ngIf="editingTodoId !== null" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Editar Tarea</h2>
+    <input [(ngModel)]="editedTitle" placeholder="Nuevo título" />
+    <input [(ngModel)]="editedDescription" placeholder="Nueva Descripción" />
+    <input type="date" [(ngModel)]="editedDueDate" />
+    <div class="modal-buttons">
+      <button (click)="saveEditing()">Guardar</button>
+      <button (click)="cancelEditing()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="todo-container">
+  <div class="add-todo">
+    <input [(ngModel)]="newTodoTitle" placeholder="Nueva tarea" />
+    <input type="text" [(ngModel)]="descriptionTodo" placeholder="Descripcion de la tarea" />
+    <input type="date" [(ngModel)]="newTodoDueDate" />
+    <button (click)="addTodo()">Agregar</button>
+  </div>
+
+  <section class="filters">
+    <div class="filterDate">
+      <input type="date" [(ngModel)]="dateToFilter" placeholder="Filtrar Por Fecha" />
+      <button (click)="deleteFilteredTodos()">Eliminar Filtrado</button>
+    </div>
+  
+    <div>
+      <button (click)="toggleView()">
+        {{ showCompleted ? 'Mostrar Todas' : 'Mostrar Completadas' }}
+      </button>
+    
+      <button (click)="sortTodos()">Ordenar ↑↓</button>
+    </div>
+
+  </section>
+
+  <ul>
+    <li *ngFor="let todo of getFilteredTodos()" 
+        [ngClass]="{ 'completed': todo.completed }">
+      <div class="first-content">
+        <input type="checkbox" [checked]="todo.completed" (change)="toggleTodoCompletion(todo)" />
+        <div class="info">
+          <span>{{ todo.title }}</span>
+          <p>{{todo.description}}</p>
+        </div>
+        <span>Fecha: {{ todo.dueDate }}</span>
+        <div class="buttons">
+          <button (click)="startEditing(todo)">Editar</button>
+          <button *ngIf="!todo.completed" (click)="deleteTodo(todo)">Eliminar</button>
+        </div>
+      </div>
+      <div [ngClass]="{
+            'rojo': getEstadoTarea(todo.dueDate) === 'rojo',
+            'naranja': getEstadoTarea(todo.dueDate) === 'naranja',
+            'verde': getEstadoTarea(todo.dueDate) === 'verde',
+            'vencida': getEstadoTarea(todo.dueDate) === 'vencida'
+          }">
+      </div>
+    </li>
+  </ul>
+</div>
