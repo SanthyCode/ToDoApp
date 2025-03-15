@@ -33,24 +33,29 @@ export class ToDoComponent {
     this.loadFromLocalStorage();
   }
 
+  //filtros para los todos ingresados
   getFilteredTodos(): Todo[] {
     let filteredTodos = this.todos;
-
+  
     if (this.dateToFilter) {
       filteredTodos = filteredTodos.filter(todo => todo.dueDate === this.dateToFilter);
-    }
-
+    } // nos filtra por la fecha
+  
     if (this.showCompleted) {
       filteredTodos = filteredTodos.filter(todo => todo.completed);
-    }
-
+    } else {
+      filteredTodos = filteredTodos.filter(todo => !todo.completed);
+    } // Filtra por completados
+  
     return filteredTodos;
   }
 
+  //borra cualqiuer filtro
   deleteFilteredTodos() {
     this.dateToFilter = '';
   }
 
+  //Función que nos ayuda a agregar nuevas tareas a la Pag
   addTodo() {
     if (this.newTodoTitle.trim() && this.newTodoDueDate) {
       const newTodo: Todo = {
@@ -64,24 +69,28 @@ export class ToDoComponent {
       this.newTodoTitle = '';
       this.descriptionTodo = '';
       this.newTodoDueDate = '';
-      this.saveToLocalStorage();
+      this.saveToLocalStorage(); //guarda la información en local para que asi si recarga la pagina no se pierda la informacion agregada
     }
   }
 
+  //controla el checkbox de completado
   toggleTodoCompletion(todo: Todo) {
     todo.completed = !todo.completed;
-    this.saveToLocalStorage();
+    this.saveToLocalStorage(); //actualiza el localStorage
   }
 
+  // controla el boton para eliminar la tarea
   deleteTodo(todo: Todo) {
     this.todos = this.todos.filter(t => t.id !== todo.id);
-    this.saveToLocalStorage();
+    this.saveToLocalStorage();//actualiza el localStorage
   }
 
+  // controla el boton para ver las tareas completadas o las pendientes
   toggleView() {
     this.showCompleted = !this.showCompleted;
   }
 
+  // funcion para guardar la informacion en local
   private loadFromLocalStorage() {
     const savedTodos = localStorage.getItem(STORAGE_KEY);
     this.todos = savedTodos ? JSON.parse(savedTodos) : [];
@@ -91,6 +100,8 @@ export class ToDoComponent {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos));
   }
 
+  // funcion que nos ayuda segun la fecha a comparacion del dia actual
+  //nos retorne un color a la card segun la prioridad por vencimiento 
   getEstadoTarea(dueDate: string): string {
     const hoy = new Date();
     const fechaTarea = new Date(dueDate);
@@ -107,6 +118,7 @@ export class ToDoComponent {
     }
   }
 
+  // controla boton para ordenar las tareas ya sea de la mas antigua a la mas vieja o viceversa
   sortTodos() {
     this.todos.sort((a, b) => {
       const fechaA = new Date(a.dueDate).getTime();
@@ -120,6 +132,7 @@ export class ToDoComponent {
     this.saveToLocalStorage();
   }
 
+  // Controla el boton para editar la informacion de la si es necesario
   startEditing(todo: Todo) {
     this.editingTodoId = todo.id;
     this.editedTitle = todo.title;
@@ -127,6 +140,7 @@ export class ToDoComponent {
     this.editedDueDate = todo.dueDate;
   }
 
+  // guarda lo que se haya editado y actualiza el localStorage
   saveEditing() {
     const todo = this.todos.find(t => t.id === this.editingTodoId);
     if (todo) {
@@ -138,6 +152,7 @@ export class ToDoComponent {
     this.cancelEditing();
   }
 
+  // cancela la edicion de la tarea
   cancelEditing() {
     this.editingTodoId = null;
     this.editedTitle = '';
